@@ -1,0 +1,5 @@
+com\mycompany\emanagementsystem\JakartaRestConfiguration.class
+com\mycompany\utils\DBWrapper.class
+com\mycompany\utils\CryptoUtil.class
+com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
+com\mycompany\utils\EncryptionDemo.class
