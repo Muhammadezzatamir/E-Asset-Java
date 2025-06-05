@@ -141,8 +141,67 @@
                         <input type="text" name="company_no" class="form-control" />
                     </div>
                     <div class="col-md-12">
-                        <label class="form-label">Company Address ID</label>
-                        <input type="text" name="company_address_id" class="form-control" />
+                        <div class="card p-3 mt-2">
+                            <h5 class="mb-3">Business Address</h5>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Address Line 1</label>
+                                    <input type="text" name="B_address1" class="form-control" />
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Address Line 2</label>
+                                    <input type="text" name="B_address2" class="form-control" />
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Address Line 3</label>
+                                    <input type="text" name="B_address3" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Postcode</label>
+                                    <input type="text" name="B_postcode" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">City</label>
+                                    <select name="B_city_id" class="form-control">
+                                        <option value="">Select</option>
+                                        <!-- Add options dynamically if needed -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 d-none" id="cityOtherContainer">
+                                    <label class="form-label">Other City</label>
+                                    <input type="text" name="B_city_other" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">District</label>
+                                    <select name="B_district_id" class="form-control">
+                                        <option value="">Select</option>
+                                        <!-- Add options dynamically if needed -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 d-none" id="districtOtherContainer">
+                                    <label class="form-label">Other District</label>
+                                    <input type="text" name="B_district_other" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">State</label>
+                                    <select name="B_state_id" class="form-control">
+                                        <option value="">Select</option>
+                                        <!-- Add options dynamically if needed -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 d-none"  id="stateOtherContainer">
+                                    <label class="form-label">Other State</label>
+                                    <input type="text" name="B_state_other" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Country</label>
+                                    <select name="B_country_id" class="form-control">
+                                        <option value="">Select</option>
+                                        <!-- Add options dynamically if needed -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
