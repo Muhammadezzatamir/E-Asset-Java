@@ -1,0 +1,89 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.navbar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    letter-spacing: 1.2px;
+}
+
+.navbar-text strong {
+    color: #ffd54f; /* warm accent color */
+}
+
+.btn-outline-light:hover {
+    background-color: #ffd54f;
+    border-color: #ffd54f;
+    color: #212529;
+    transition: all 0.3s ease;
+}
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    position: fixed;
+    top: 56px; /* Adjust for header height */
+    left: 0;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+    z-index: 1040;
+}
+
+.sidebar.collapsed {
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar a.nav-link {
+    padding: 12px 20px;
+    font-weight: 500;
+    border-left: 4px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.sidebar a.nav-link:hover {
+    background-color: #495057;
+    border-left: 4px solid #ffd54f; /* accent color */
+    text-decoration: none;
+}
+
+#sidebarToggle {
+    transition: left 0.3s ease;
+}
+
+.sidebar.collapsed + #sidebarToggle {
+    left: 10px;
+}
+
+.content {
+    margin-left: 220px;
+    margin-top: 56px; /* height of header */
+    padding: 20px;
+    flex-grow: 1;
+}
+footer {
+    background-color: #f8f9fa;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    margin-top: auto;
+    border-top: 1px solid #ddd;
+}
+
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f8f9fa; /* light background */
+    text-align: center;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
