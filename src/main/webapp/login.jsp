@@ -52,7 +52,7 @@
 
         <div class="card shadow-sm p-4" style="min-width:320px; max-width:400px; width: 100%;">
             <h2 class="card-title mb-3 text-center">Login</h2>
-            <form action="login" method="post">
+            <form id="login">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" name="username" id="username" class="form-control" required autofocus />
@@ -77,5 +77,39 @@
     <script src="Bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="js/login-script.js"></script>
+    
+    <script>
+        document.getElementById("login").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                data[key] =value;
+            });
+            
+            fetch('<%= request.getContextPath() %>/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.json();
+            })
+            .then(response => {
+                if (response.success) {
+                    window.location.href = "index.jsp";
+                }
+            })
+            .catch(err => {
+                console.error("Login failed:", err);
+                alert("Login failed."); // not "Registration failed"
+            });
+        
+        });
+    </script>
 </body>
 </html>

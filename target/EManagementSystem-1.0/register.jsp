@@ -16,7 +16,7 @@
     <main class="container-fluid content-container d-flex justify-content-center align-items-center">
         <div class="card shadow-sm p-4" style="max-width:600px; width: 100%;">
             <h2 class="card-title mb-3 text-center">Register</h2>
-            <form action="register" method="post">
+            <form id="registerForm">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Username</label>
@@ -90,7 +90,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">City</label>
-                                    <select name="city_id" class="form-control">
+                                    <select name="city_id" id="cityDropdown" class="form-control">
                                         <option value="">Select</option>
                                         <!-- Add options dynamically if needed -->
                                     </select>
@@ -101,7 +101,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">District</label>
-                                    <select name="district_id" class="form-control">
+                                    <select name="district_id" id="districtDropdown" class="form-control">
                                         <option value="">Select</option>
                                         <!-- Add options dynamically if needed -->
                                     </select>
@@ -112,7 +112,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">State</label>
-                                    <select name="state_id" class="form-control">
+                                    <select name="state_id" id="stateDropdown" class="form-control">
                                         <option value="">Select</option>
                                         <!-- Add options dynamically if needed -->
                                     </select>
@@ -123,79 +123,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
-                                    <select name="state_id" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Company Name</label>
-                        <input type="text" name="company_name" class="form-control" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Company No</label>
-                        <input type="text" name="company_no" class="form-control" />
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card p-3 mt-2">
-                            <h5 class="mb-3">Business Address</h5>
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <label class="form-label">Address Line 1</label>
-                                    <input type="text" name="B_address1" class="form-control" />
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Address Line 2</label>
-                                    <input type="text" name="B_address2" class="form-control" />
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Address Line 3</label>
-                                    <input type="text" name="B_address3" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Postcode</label>
-                                    <input type="text" name="B_postcode" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">City</label>
-                                    <select name="B_city_id" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none" id="cityOtherContainer">
-                                    <label class="form-label">Other City</label>
-                                    <input type="text" name="B_city_other" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">District</label>
-                                    <select name="B_district_id" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none" id="districtOtherContainer">
-                                    <label class="form-label">Other District</label>
-                                    <input type="text" name="B_district_other" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">State</label>
-                                    <select name="B_state_id" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none"  id="stateOtherContainer">
-                                    <label class="form-label">Other State</label>
-                                    <input type="text" name="B_state_other" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Country</label>
-                                    <select name="B_country_id" class="form-control">
+                                    <select name="country" id="countryDropdown" class="form-control">
                                         <option value="">Select</option>
                                         <!-- Add options dynamically if needed -->
                                     </select>
@@ -227,5 +155,119 @@
 
     <script src="Bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="js/login-script.js"></script> <!-- 👈 Ensure this is correct path -->
+    
+    <!-- JavaScript to load countries dynamically -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('<%=request.getContextPath()%>/api/countries') // Calls your servlet
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById('countryDropdown');
+                    data.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.id;
+                        option.textContent = country.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching countries:', error);
+                    alert('Failed to load country list.');
+                });
+                
+            fetch('<%=request.getContextPath()%>/api/state') // Calls your servlet
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById('stateDropdown');
+                    data.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.id;
+                        option.textContent = country.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching state:', error);
+                    alert('Failed to load state list.');
+                });
+                
+            fetch('<%=request.getContextPath()%>/api/district') // Calls your servlet
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById('districtDropdown');
+                    data.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.id;
+                        option.textContent = country.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching district', error);
+                    alert('Failed to load district list.');
+                });
+                
+            fetch('<%=request.getContextPath()%>/api/city') // Calls your servlet
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById('cityDropdown');
+                    data.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.id;
+                        option.textContent = country.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching city', error);
+                    alert('Failed to load city list.');
+                });
+        });
+        
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            debugger;
+            fetch('<%= request.getContextPath() %>/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.json();
+            })
+            .then(response => {
+                alert(response.message);
+                if (response.success) {
+                    window.location.href = "login.jsp";
+                }
+            })
+            .catch(err => {
+                console.error("Registration failed:", err);
+                alert("Registration failed.");
+            });
+        });
+
+    </script>
 </body>
 </html>

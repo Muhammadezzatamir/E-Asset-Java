@@ -1,8 +1,13 @@
-com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
+com\mycompany\emanagementsystem\servlet\RegisterServlet.class
 com\mycompany\utils\AuditUtil$AuditInfo.class
 com\mycompany\utils\EncryptionDemo.class
+com\mycompany\emanagementsystem\servlet\StateServlet.class
 com\mycompany\emanagementsystem\JakartaRestConfiguration.class
-com\mycompany\utils\DBWrapper.class
+com\mycompany\emanagementsystem\servlet\LoginServlet.class
 com\mycompany\utils\CryptoUtil.class
-com\mycompany\servlets\RegisterServlet.class
+com\mycompany\emanagementsystem\servlet\DistrictServlet.class
+com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
+com\mycompany\utils\DBWrapper.class
+com\mycompany\emanagementsystem\servlet\CityServlet.class
+com\mycompany\emanagementsystem\servlet\CountryServlet.class
 com\mycompany\utils\AuditUtil.class

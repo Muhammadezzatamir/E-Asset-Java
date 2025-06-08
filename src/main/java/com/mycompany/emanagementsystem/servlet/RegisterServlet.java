@@ -1,99 +1,151 @@
-package com.mycompany.servlets;
+package com.mycompany.emanagementsystem.servlet;
 
+import com.mycompany.utils.AuditUtil;
+import com.mycompany.utils.AuditUtil.AuditInfo;
 import com.mycompany.utils.CryptoUtil;
 import com.mycompany.utils.DBWrapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+
+import org.json.JSONObject;
 import java.io.IOException;
 import java.sql.*;
 
-@WebServlet("/register")
+@WebServlet("/api/register")
 public class RegisterServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (DBWrapper db = new DBWrapper()) {
+        response.setContentType("application/json");
+        JSONObject result = new JSONObject();
 
-            // --- 1. Insert Address into gl_address ---
-            String insertAddressSQL = "INSERT INTO gl_address (address1, address2, address3, postcode, city_id, city_other, district_id, district_other, state_id, state_other, country, aud_add_date, aud_add_userid, aud_action, aud_action_date) " +
-                                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            Timestamp now = new Timestamp(System.currentTimeMillis());
+        try (BufferedReader reader = request.getReader()) {
+            StringBuilder jb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) jb.append(line);
 
-            try (PreparedStatement addressStmt = db.getConnection().prepareStatement(insertAddressSQL, Statement.RETURN_GENERATED_KEYS)) {
-                addressStmt.setString(1, request.getParameter("address1"));
-                addressStmt.setString(2, request.getParameter("address2"));
-                addressStmt.setString(3, request.getParameter("address3"));
-                addressStmt.setString(4, request.getParameter("postcode"));
-                addressStmt.setString(5, request.getParameter("city_id"));
-                addressStmt.setString(6, request.getParameter("city_other"));
-                addressStmt.setString(7, request.getParameter("district_id"));
-                addressStmt.setString(8, request.getParameter("district_other"));
-                addressStmt.setString(9, request.getParameter("state_id"));
-                addressStmt.setString(10, request.getParameter("state_other"));
-                addressStmt.setString(11, request.getParameter("country"));
-                addressStmt.setTimestamp(12, now);
-                addressStmt.setString(13, getAuditUser(request));
-                addressStmt.setString(14, "INSERT");
-                addressStmt.setTimestamp(15, now);
-                addressStmt.executeUpdate();
-
-                ResultSet keys = addressStmt.getGeneratedKeys();
-                int addressId = -1;
-                if (keys.next()) {
-                    addressId = keys.getInt(1);
-                } else {
-                    throw new SQLException("Failed to retrieve address ID.");
-                }
-                
-                String encrypted = request.getParameter("password");
-                String encypt_pass;
-                try {
-                    encypt_pass = CryptoUtil.encrypt(encrypted);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Encryption failed.");
-                    return;
-                }
+            JSONObject input = new JSONObject(jb.toString());
+            int auditUser = input.optInt("aud_add_userid", 0); // default to 0 if key is missing
 
 
-                // --- 2. Insert into gl_user ---
-                String insertUserSQL = "INSERT INTO gl_user (user_name, password, first_name, last_name, nric, email, mobile_no, gender_id, race_id, marital_status, address_id, company_name, company_no, company_address_id, aud_add_date, aud_add_userid, aud_action, aud_action_date) " +
-                                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                try (PreparedStatement userStmt = db.getConnection().prepareStatement(insertUserSQL)) {
-                    userStmt.setString(1, request.getParameter("user_name"));
-                    userStmt.setString(2, encypt_pass);
-                    userStmt.setString(3, request.getParameter("first_name"));
-                    userStmt.setString(4, request.getParameter("last_name"));
-                    userStmt.setString(5, request.getParameter("nric"));
-                    userStmt.setString(6, request.getParameter("email"));
-                    userStmt.setString(7, request.getParameter("mobile_no"));
-                    userStmt.setString(8, request.getParameter("gender_id"));
-                    userStmt.setString(9, request.getParameter("race_id"));
-                    userStmt.setString(10, request.getParameter("marital_status"));
-                    userStmt.setInt(11, addressId);
-                    userStmt.setString(12, request.getParameter("company_name"));
-                    userStmt.setString(13, request.getParameter("company_no"));
-                    userStmt.setString(14, request.getParameter("company_address_id"));
-                    userStmt.setTimestamp(15, now);
-                    userStmt.setString(16, getAuditUser(request));
-                    userStmt.setString(17, "INSERT");
-                    userStmt.setTimestamp(18, now);
-                    userStmt.executeUpdate();
-                }
+            AuditInfo audit = AuditUtil.generateCreateAudit(auditUser);
+
+            try (DBWrapper db = new DBWrapper(); Connection conn = db.getConnection()) {
+                conn.setAutoCommit(false);
+
+                int addressId = insertAddress(conn, input, audit);
+                insertUser(conn, input, addressId, audit);
+
+                conn.commit();
+
+                result.put("success", true);
+                result.put("message", "Registration successful!");
             }
-
-            response.sendRedirect("register-success.jsp");
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Registration failed.");
+            result.put("success", false);
+            result.put("message", "Registration failed: " + e.getMessage());
+        }
+
+        response.getWriter().write(result.toString());
+    }
+
+    private int insertAddress(Connection conn, JSONObject input, AuditInfo audit) throws SQLException {
+    String sql = "INSERT INTO gl_address (" +
+            "address_1, address_2, address_3, postcode, city_id, city_other, " +
+            "district_id, district_other, state_id, state_other, country_id, " +
+            "aud_add_date, aud_add_userid, aud_mod_date, aud_mod_userid, " +
+            "aud_action_date, aud_action) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    System.out.println(sql);
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, input.optString("address1", null));
+            stmt.setString(2, input.optString("address2", null));
+            stmt.setString(3, input.optString("address3", null));
+            stmt.setString(4, input.optString("postcode", null));
+            stmt.setInt(5, input.optInt("city_id", 0));             // <-- integer
+            stmt.setString(6, input.optString("city_other", null));
+            stmt.setInt(7, input.optInt("district_id", 0));         // <-- integer
+            stmt.setString(8, input.optString("district_other", null));
+            stmt.setInt(9, input.optInt("state_id", 0));            // <-- integer
+            stmt.setString(10, input.optString("state_other", null));
+            stmt.setInt(11, input.optInt("country", 0));         // <-- integer
+
+            stmt.setTimestamp(12, audit.addDate);
+            stmt.setInt(13, audit.addUserId);
+            stmt.setTimestamp(14, audit.modDate);
+            stmt.setInt(15, audit.modUserId);
+            stmt.setTimestamp(16, audit.actionDate);
+            stmt.setString(17, audit.action);
+
+
+
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                throw new SQLException("No address ID generated");
+            }
         }
     }
 
-    private String getAuditUser(HttpServletRequest request) {
-        String user = request.getParameter("aud_add_userid");
-        return (user != null && !user.trim().isEmpty()) ? user : "system";
+
+    private void insertUser(Connection conn, JSONObject input, int addressId, AuditInfo audit) throws SQLException {
+    String sql = "INSERT INTO gl_user (" +
+                 "user_name, password, first_name, last_name, nric, email, mobile_no, gender_id, race_id, marital_status, " +
+                 "address_id, role_id, " +
+                 "reason, " +
+                 "aud_add_date, aud_add_userid, aud_mod_date, aud_mod_userid, aud_action, aud_action_date" +
+                 ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                 
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, input.optString("user_name", null));
+            String rawPassword = input.optString("password", null);
+            String encrypted;
+            try {
+                encrypted = CryptoUtil.encrypt(rawPassword);
+            } catch (Exception e) {
+                throw new SQLException("Password encryption failed", e);
+            }
+
+            stmt.setString(2, encrypted);
+            stmt.setString(3, input.optString("first_name", null));
+            stmt.setString(4, input.optString("last_name", null));
+            stmt.setString(5, input.optString("nric", null));
+            stmt.setString(6, input.optString("email", null));
+            stmt.setString(7, input.optString("mobile_no", null));
+            stmt.setInt(8, input.optInt("gender_id", 0));
+            stmt.setInt(9, input.optInt("race_id", 0));
+            stmt.setString(10, input.optString("marital_status", null));
+            stmt.setInt(11, addressId);
+            stmt.setInt(12, input.optInt("role_id", 0));
+
+            // is_deleted = 0
+            stmt.setString(13, input.optString("reason", null));
+
+            stmt.setTimestamp(14, audit.addDate);
+            stmt.setInt(15, audit.modUserId);
+            stmt.setTimestamp(16, audit.modDate);  // or null if no modification yet
+            stmt.setInt(17, audit.modUserId); // or null
+            stmt.setString(18, audit.action);
+            stmt.setTimestamp(19, audit.actionDate);
+
+            stmt.executeUpdate();
+        }
+    }
+
+
+    private String opt(JSONObject obj, String key) {
+      String v = obj.optString(key, "").trim();
+      return v.isEmpty() ? null : v;
     }
 }
