@@ -87,3 +87,67 @@ footer {
     box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
     z-index: 1000;
 }
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: -220px;
+    width: 220px;
+    transition: all 0.3s ease;
+    z-index: 1050;
+  }
+
+  body.sidebar-open .sidebar {
+    left: 0;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+
+  body.sidebar-open .content {
+    margin-left: 220px;
+  }
+}
+
+/* Ensure content never overlaps footer */
+.content {
+  padding-bottom: 60px; /* Space for footer on smaller screens */
+}
+
+/* Dark mode adjustments (already added earlier) retained */
+.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+.dark-mode .navbar,
+.dark-mode .sidebar,
+.dark-mode footer {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .nav-link {
+  color: #f1f1f1 !important;
+}
+
+.dark-mode .nav-link:hover {
+  background-color: #333333;
+  border-left-color: #ffd54f;
+}
+
+/* Push content to full width when sidebar collapsed */
+.sidebar-collapsed .sidebar {
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+.sidebar-collapsed .content {
+  margin-left: 0 !important;
+}
+
+.rounded-5 {
+    border-radius: 20px;
+}
