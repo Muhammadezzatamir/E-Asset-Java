@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Dashboard - E-Management System</title>
+        <title>Dashboard - E-Asset System</title>
         <!-- Bootstrap CSS -->
         <link href="Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <script src="Bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -19,45 +19,67 @@
         <%@ include file="sidebar.jsp" %>
 
         <main class="content">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card  rounded-5">
-                        <div class="card-body bg-primary rounded-5">
-                            <h5 class="card-title">Card Title</h5>
-                            <p class="card-text">This is some example text inside the card body.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+            <div class="row g-3">
+                <!-- My Assigned Assets -->
+                <div class="col-md-4">
+                    <div class="card rounded-5">
+                        <div class="card-body bg-primary text-white rounded-5">
+                            <h5 class="card-title">My Assigned Assets</h5>
+                            <p class="card-text fs-2">8</p>
+                            <a href="myAssets.jsp" class="btn btn-light btn-sm">View My Assets</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card  rounded-5">
-                        <div class="card-body bg-primary rounded-5">
-                            <h5 class="card-title">Card Title</h5>
-                            <p class="card-text">This is some example text inside the card body.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+
+                <!-- Pending Requests -->
+                <div class="col-md-4">
+                    <div class="card rounded-5">
+                        <div class="card-body bg-warning text-dark rounded-5">
+                            <h5 class="card-title">Pending Requests</h5>
+                            <p class="card-text fs-2">2</p>
+                            <a href="myRequests.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card  rounded-5">
-                        <div class="card-body bg-primary rounded-5">
-                            <h5 class="card-title">Card Title</h5>
-                            <p class="card-text">This is some example text inside the card body.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card  rounded-5">
-                        <div class="card-body bg-primary rounded-5">
-                            <h5 class="card-title">Card Title</h5>
-                            <p class="card-text">This is some example text inside the card body.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+
+                <!-- Upcoming Maintenance -->
+                <div class="col-md-4">
+                    <div class="card rounded-5">
+                        <div class="card-body bg-success text-white rounded-5">
+                            <h5 class="card-title">Upcoming Maintenance</h5>
+                            <p class="card-text fs-2">1</p>
+                            <a href="maintenanceSchedule.jsp" class="btn btn-light btn-sm">View Schedule</a>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Recent Activity List -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card rounded-5">
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Activity</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Requested Laptop for Project X - Pending</li>
+                                <li class="list-group-item">Returned Projector on 2025-06-01</li>
+                                <li class="list-group-item">Reported issue with Printer #12</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-start gap-3">
+                    <a href="requestAsset.jsp" class="btn btn-primary rounded-5 px-4">Request Asset</a>
+                    <a href="reportIssue.jsp" class="btn btn-danger rounded-5 px-4">Report Issue</a>
+                    <a href="profile.jsp" class="btn btn-secondary rounded-5 px-4">View Profile</a>
+                </div>
+            </div>
         </main>
+
 
         <%@ include file="footer.jsp" %>
 

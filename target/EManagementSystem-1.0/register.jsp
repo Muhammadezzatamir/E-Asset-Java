@@ -48,7 +48,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Gender</label>
-                        <select name="gender_id" class="form-control" required>
+                        <select name="gender_id" class="form-control">
                             <option value="">Select</option>
                             <option value="1">Male</option>
                             <option value="2">Female</option>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Race</label>
-                        <select name="race_id" class="form-control" required>
+                        <select name="race_id" class="form-control">
                             <option value="">Select</option>
                             <option value="1">Malay</option>
                             <option value="2">Chinese</option>

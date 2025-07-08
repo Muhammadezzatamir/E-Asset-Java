@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>E-Management System</title>
+    <title>E-Asset System</title>
     <!-- Bootstrap CSS -->
     <link href="Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
@@ -18,7 +18,7 @@
 </head>
 <body>
     <header class="fixed-top d-flex justify-content-between align-items-center px-3">
-        <h1 class="h4 m-0">E-Management System</h1>
+        <h1 class="h4 m-0">E-Asset System</h1>
         <button id="toggleModeBtn" class="btn btn-outline-primary btn-sm">Dark Mode</button>
     </header>
 

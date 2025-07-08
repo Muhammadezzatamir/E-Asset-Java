@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <a class="navbar-brand fw-bold fs-4" href="#">
             <i class="bi bi-gear-fill me-2"></i> <!-- Bootstrap Icons, optional -->
-            E-Management System
+            E-Asset System
         </a>
 
         <button id="sidebarToggle" class="btn btn-outline-light btn-sm me-2">
