@@ -1,3 +1,4 @@
+com\mycompany\emanagementsystem\servlet\AssetServlet.class
 com\mycompany\emanagementsystem\servlet\RegisterServlet.class
 com\mycompany\utils\AuditUtil$AuditInfo.class
 com\mycompany\utils\EncryptionDemo.class
@@ -11,5 +12,6 @@ com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
 com\mycompany\emanagementsystem\servlet\CategoryServlet.class
 com\mycompany\utils\DBWrapper.class
 com\mycompany\emanagementsystem\servlet\CityServlet.class
+com\mycompany\emanagementsystem\servlet\TransactionServlet.class
 com\mycompany\emanagementsystem\servlet\CountryServlet.class
 com\mycompany\utils\AuditUtil.class

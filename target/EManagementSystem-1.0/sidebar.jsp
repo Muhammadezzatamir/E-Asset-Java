@@ -3,7 +3,7 @@
     <nav class="nav flex-column pt-3">
         <a href="index.jsp" class="nav-link text-white px-3">Dashboard</a>
         <a href="asset.jsp" class="nav-link text-white px-3">Assets</a>
-        <a href="categories.jsp" class="nav-link text-white px-3">Categories</a>
+        <a href="transaction.jsp" class="nav-link text-white px-3">Transaction</a>
         <a href="locations.jsp" class="nav-link text-white px-3">Locations</a>
         <a href="assignments.jsp" class="nav-link text-white px-3">Assignments</a>
         <a href="maintenance.jsp" class="nav-link text-white px-3">Maintenance</a>

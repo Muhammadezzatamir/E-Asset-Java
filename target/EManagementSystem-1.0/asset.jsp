@@ -29,12 +29,12 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Code</th>
                         <th>Category</th>
                         <th>Brand</th>
                         <th>Model</th>
+                        <th>Description</th>
                         <th>Quantity</th>
-                        <th>Used</th>
-                        <th>Damage</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -48,11 +48,11 @@
                     <tr>
                         <td><%= rs.getInt("stock_id")%></td>
                         <td><%= rs.getString("stock_code")%></td>
+                        <td><%= rs.getString("stock_category")%></td>
                         <td><%= rs.getString("stock_brand")%></td>
                         <td><%= rs.getString("stock_model")%></td>
                         <td><%= rs.getString("stock_desc")%></td>
-                        <td><%= rs.getString("stock_desc")%></td>
-                        <td><%= rs.getString("stock_desc")%></td>
+                        <td><%= rs.getString("quantity")%></td>
                         <td></td>
                     </tr>
                     <%
@@ -80,29 +80,29 @@
                         <div class="modal-body row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Code</label>
-                                <input type="text" class="form-control" name="category" required />
+                                <input type="text" class="form-control" name="stock_code" required />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Category</label>
-                                <select name="category" id="categoryDropdown" class="form-control">
+                                <select name="stock_category" id="categoryDropdown" class="form-control">
                                     <option value="">Select</option>
                                     <!-- Add options dynamically if needed -->
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Brand</label>
-                                <select name="brand" id="brandDropdown" class="form-control">
+                                <select name="stock_brand" id="brandDropdown" class="form-control">
                                     <option value="">Select</option>
                                     <!-- Add options dynamically if needed -->
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Model</label>
-                                <input type="text" class="form-control" name="model" required />
+                                <input type="text" class="form-control" name="stock_model" required />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Description</label>
-                                <textarea class="form-control" name="model" rows="4"></textarea>
+                                <textarea class="form-control" name="stock_desc" rows="4"></textarea>
                             </div>
 
                             <div class="col-md-6">
@@ -139,6 +139,7 @@
     const openModalBtn = document.getElementById("modal_addasset");
     const closeModalBtn = document.getElementById("modal_close");
     const addAssetModal = new bootstrap.Modal(document.getElementById("addAssetModal"));
+
 
     const categoryDropdown = document.getElementById('categoryDropdown');
     const brandDropdown = document.getElementById('brandDropdown');
@@ -207,38 +208,43 @@
     });
 });
 
-document.getElement("addAsset").addEventListenner("submit", function(e) {
-    e.prevent();
+document.getElementById("addAsset").addEventListener("submit", function (e) {
+    e.preventDefault();
+
     const formData = new FormData(this);
     const data = {};
-    
-    formData.forEach((value, ket) => {
+
+    formData.forEach((value, key) => {
         data[key] = value;
     });
-    
-    fetch('<%= request.getContextPath() %>/api/addassets', {
+
+    fetch('<%= request.getContextPath() %>/api/addasset', {
         method: 'POST',
         headers: {
-            'Content-Type' : 'application/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-            .then(res => {
-                if (!res.ok)
-                    throw new Error ("Network response was not ok");
-                    return res.json();
-            })
-            .then(response => {
-                alert(response.message);
-                if (response.success) {
-                    addAssetModal.hide();
-                }
-            })
-                    .catch(err => {
-                        console.error("Faild when add asset", err);
-                        alert("Faild when add asset");
-                    });         
+    .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+    })
+    .then(response => {
+        alert(response.message);
+        if(response.success) {
+            console.log("Success adding asset");
+            // ✅ Correct Bootstrap 4 jQuery modal hide
+            $('#addAssetModal').modal('hide');
+
+            this.reset();
+        }
+    })
+    .catch(err => {
+        console.error("Failed to add asset:", err);
+        alert("Failed to add asset");
+    });
 });
+
 
         </script>
     </body>
