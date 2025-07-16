@@ -7,6 +7,7 @@ com\mycompany\emanagementsystem\JakartaRestConfiguration.class
 com\mycompany\emanagementsystem\servlet\ParameterServlet.class
 com\mycompany\emanagementsystem\servlet\LoginServlet.class
 com\mycompany\utils\CryptoUtil.class
+com\mycompany\emanagementsystem\servlet\AssetDAO.class
 com\mycompany\emanagementsystem\servlet\BrandServlet.class
 com\mycompany\emanagementsystem\servlet\DistrictServlet.class
 com\mycompany\emanagementsystem\servlet\UserServlet.class
@@ -14,6 +15,7 @@ com\mycompany\emanagementsystem\servlet\ParameterGroupServlet.class
 com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
 com\mycompany\emanagementsystem\servlet\CategoryServlet.class
 com\mycompany\utils\DBWrapper.class
+com\mycompany\utils\ShareVariable.class
 com\mycompany\emanagementsystem\servlet\CityServlet.class
 com\mycompany\emanagementsystem\servlet\TransactionServlet.class
 com\mycompany\emanagementsystem\servlet\CountryServlet.class

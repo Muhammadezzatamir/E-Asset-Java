@@ -19,12 +19,20 @@
         <%@ include file="sidebar.jsp" %>
 
         <main class="content">
+            
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="mb-0">Asset List</h3>
+                <%
+                    if ("1".equals(roleId)) {
+                %>
                 <button type="button" class="btn btn-primary" id="modal_addasset">
                     <i class="bi bi-plus-circle me-1"></i> Add Asset
                 </button>
+                <%
+                    }
+                %>
             </div>
+            
             <table id="contactsTable" class="display table table-striped" style="width:100%">
                 <thead>
                     <tr>

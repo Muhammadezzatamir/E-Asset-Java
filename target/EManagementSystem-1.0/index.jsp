@@ -1,3 +1,4 @@
+<%@ page import="com.mycompany.emanagementsystem.servlet.AssetDAO" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,14 +20,24 @@
         <%@ include file="sidebar.jsp" %>
 
         <main class="content">
+            <%
+                if ("1".equals(roleId)) {
+            %>
             <div class="row g-3">
                 <!-- My Assigned Assets -->
+                <%
+                    String userId = (String) session.getAttribute("user_id");
+                    int assetCount = AssetDAO.getAssignedAssetCount(userId);
+                    int transCount = AssetDAO.getAssignedTransCount(userId);
+                    int userCount = AssetDAO.getAssignedUserCount(userId);
+                %>
+                
                 <div class="col-md-4">
                     <div class="card rounded-5">
                         <div class="card-body bg-primary text-white rounded-5">
-                            <h5 class="card-title">My Assigned Assets</h5>
-                            <p class="card-text fs-2">8</p>
-                            <a href="myAssets.jsp" class="btn btn-light btn-sm">View My Assets</a>
+                            <h5 class="card-title">Assets</h5>
+                            <p class="card-text fs-2"><%= assetCount %></p>
+                            <a href="asset.jsp" class="btn btn-light btn-sm">View My Assets</a>
                         </div>
                     </div>
                 </div>
@@ -35,9 +46,9 @@
                 <div class="col-md-4">
                     <div class="card rounded-5">
                         <div class="card-body bg-warning text-dark rounded-5">
-                            <h5 class="card-title">Pending Requests</h5>
-                            <p class="card-text fs-2">2</p>
-                            <a href="myRequests.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
+                            <h5 class="card-title">Transaction</h5>
+                            <p class="card-text fs-2"><%= transCount %></p>
+                            <a href="transaction.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
                         </div>
                     </div>
                 </div>
@@ -46,16 +57,16 @@
                 <div class="col-md-4">
                     <div class="card rounded-5">
                         <div class="card-body bg-success text-white rounded-5">
-                            <h5 class="card-title">Upcoming Maintenance</h5>
-                            <p class="card-text fs-2">1</p>
-                            <a href="maintenanceSchedule.jsp" class="btn btn-light btn-sm">View Schedule</a>
+                            <h5 class="card-title">User</h5>
+                            <p class="card-text fs-2"><%= userCount %></p>
+                            <a href="users.jsp" class="btn btn-light btn-sm">View Schedule</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Activity List -->
-            <div class="row mt-4">
+<!--            <div class="row mt-4">
                 <div class="col-12">
                     <div class="card rounded-5">
                         <div class="card-body">
@@ -68,16 +79,53 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Quick Actions -->
-            <div class="row mt-4">
+<!--            <div class="row mt-4">
                 <div class="col-12 d-flex justify-content-start gap-3">
                     <a href="requestAsset.jsp" class="btn btn-primary rounded-5 px-4">Request Asset</a>
                     <a href="reportIssue.jsp" class="btn btn-danger rounded-5 px-4">Report Issue</a>
                     <a href="profile.jsp" class="btn btn-secondary rounded-5 px-4">View Profile</a>
                 </div>
+            </div>-->
+            <%
+                }
+                else
+                {
+            %>
+            <div class="row g-3">
+                <!-- My Assigned Assets -->
+                <%
+                    String userId = (String) session.getAttribute("user_id");
+                    int assetCount = AssetDAO.getAssignedAssetCount_USER(userId);
+                    int transCount = AssetDAO.getAssignedTransCount_USER(userId);
+                %>
+                
+                <div class="col-md-6">
+                    <div class="card rounded-5">
+                        <div class="card-body bg-primary text-white rounded-5">
+                            <h5 class="card-title">Assets</h5>
+                            <p class="card-text fs-2"><%= assetCount %></p>
+                            <a href="asset.jsp" class="btn btn-light btn-sm">View My Assets</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Requests -->
+                <div class="col-md-6">
+                    <div class="card rounded-5">
+                        <div class="card-body bg-warning text-dark rounded-5">
+                            <h5 class="card-title">Transaction</h5>
+                            <p class="card-text fs-2"><%= transCount %></p>
+                            <a href="transaction.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <%
+                }
+            %>
         </main>
 
 
