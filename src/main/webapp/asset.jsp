@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Dashboard - E-Asset System</title>
+        <title>E-Asset System</title>
         <!-- Bootstrap CSS -->
         <link href="Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
@@ -40,20 +40,28 @@
                 </thead>
                 <tbody>
                     <%
-                        String sql = "select * from stock";
+                        String sql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, * from stock";
                         try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(sql)) {
 
                             while (rs.next()) {
                     %>
                     <tr>
-                        <td><%= rs.getInt("stock_id")%></td>
+                        <td><%= rs.getInt("num_row")%></td>
                         <td><%= rs.getString("stock_code")%></td>
                         <td><%= rs.getString("stock_category")%></td>
                         <td><%= rs.getString("stock_brand")%></td>
                         <td><%= rs.getString("stock_model")%></td>
                         <td><%= rs.getString("stock_desc")%></td>
                         <td><%= rs.getString("quantity")%></td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1 edit-btn" data-id="<%= rs.getInt("stock_id") %>">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="<%= rs.getInt("stock_id") %>">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+
                     </tr>
                     <%
                         }
@@ -206,6 +214,33 @@
         searching: true,
         ordering: true
     });
+    
+    document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const stockId = this.getAttribute("data-id");
+                    console.log("Edit stock with ID:", stockId);
+                    // TODO: Load and show modal with stock info
+                });
+            });
+
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const stockId = this.getAttribute("data-id");
+                    if (confirm("Are you sure you want to delete this stock?")) {
+                        fetch(`<%= request.getContextPath() %>/api/deletestock?id=${stockId}`, {
+                            method: 'DELETE'
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Delete failed");
+                            location.reload(); // Refresh table
+                        })
+                        .catch(err => {
+                            console.error("Delete error", err);
+                            alert("Delete failed");
+                        });
+                    }
+                });
+            });
 });
 
 document.getElementById("addAsset").addEventListener("submit", function (e) {
@@ -244,7 +279,6 @@ document.getElementById("addAsset").addEventListener("submit", function (e) {
         alert("Failed to add asset");
     });
 });
-
 
         </script>
     </body>

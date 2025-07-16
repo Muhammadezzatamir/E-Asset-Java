@@ -5,16 +5,18 @@ import com.mycompany.utils.AuditUtil.AuditInfo;
 import com.mycompany.utils.DBWrapper;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-@WebServlet("/api/addasset")
-public class AssetServlet extends HttpServlet {
+@WebServlet("/api/addparametergroup")
+public class ParameterGroupServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -50,26 +52,21 @@ public class AssetServlet extends HttpServlet {
         response.getWriter().write(result.toString());
     }
     
-    private void insertAsset(Connection conn, JSONObject input, AuditInfo audit) throws SQLException{
-        String strsql = "INSERT INTO stock " +
-                " (stock_code, stock_category, stock_brand, stock_model, stock_desc, quantity, aud_add_date, aud_add_userid, aud_mod_date, aud_mod_userid, aud_action_date, aud_action) " +
+    private void insertAsset(Connection conn, JSONObject input, AuditUtil.AuditInfo audit) throws SQLException{
+        String strsql = "INSERT INTO gl_parameter_type " +
+                " (parameter_type_value, aud_add_date, aud_add_userid, aud_mod_date, aud_mod_userid, aud_action_date, aud_action) " +
                 " VALUES " +
-                " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+                " (?, ?, ?, ?, ?, ?, ?) ";
         
        try (PreparedStatement stmt = conn.prepareStatement(strsql)) {
-           stmt.setString(1, input.optString("stock_code", null));
-           stmt.setInt(2, input.optInt("stock_category", 0));
-           stmt.setInt(3, input.optInt("stock_brand", 0));
-           stmt.setString(4, input.optString("stock_model", null));
-           stmt.setString(5, input.optString("stock_desc", null));
-           stmt.setInt(6, input.optInt("quantity", 0));
+           stmt.setString(1, input.optString("parameter_type_value", null));
            
-           stmt.setTimestamp(7, audit.addDate);
-           stmt.setInt(8, audit.modUserId);
-           stmt.setTimestamp(9, audit.modDate);  // or null if no modification yet
-           stmt.setInt(10, audit.modUserId); // or null
-           stmt.setTimestamp(11, audit.actionDate);
-           stmt.setString(12, audit.action);
+           stmt.setTimestamp(2, audit.addDate);
+           stmt.setInt(3, audit.modUserId);
+           stmt.setTimestamp(4, audit.modDate);  // or null if no modification yet
+           stmt.setInt(5, audit.modUserId); // or null
+           stmt.setTimestamp(6, audit.actionDate);
+           stmt.setString(7, audit.action);
            
             
            stmt.executeUpdate();
@@ -79,5 +76,30 @@ public class AssetServlet extends HttpServlet {
     private String opt(JSONObject obj, String key) {
         String v = obj.optString(key, "").trim();
         return v.isEmpty()? null : v;
+    }
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        
+        String query = "select parameter_type_id, parameter_type_value from gl_parameter_type where is_deleted = 0";
+        
+        JSONArray category = new JSONArray();
+        
+        try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(query)) {
+            while (rs.next()) {
+                JSONObject categories = new JSONObject();
+                categories.put("id", rs.getString("parameter_type_id"));
+                categories.put("name", rs.getString("parameter_type_value"));
+                category.put(categories);
+            }
+
+            out.print(category.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"error\":\"Database error occurred\"}");
+        }
     }
 }

@@ -22,14 +22,14 @@ public class CountryServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        String query = "SELECT parameter_id, parameter_value FROM gl_parameter WHERE parameter_type = '4'";
+        String query = "SELECT parameter_code, parameter_value FROM gl_parameter WHERE parameter_type = '4'";
 
         JSONArray countries = new JSONArray();
 
         try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(query)) {
             while (rs.next()) {
                 JSONObject country = new JSONObject();
-                country.put("id", rs.getInt("parameter_id"));
+                country.put("id", rs.getInt("parameter_code"));
                 country.put("name", rs.getString("parameter_value"));
                 countries.put(country);
             }
