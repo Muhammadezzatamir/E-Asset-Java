@@ -1,5 +1,6 @@
 com\mycompany\emanagementsystem\servlet\DeleteAsset.class
 com\mycompany\emanagementsystem\servlet\DeleteUserServlet.class
+com\mycompany\emanagementsystem\servlet\RaceServlet.class
 com\mycompany\emanagementsystem\servlet\RegisterServlet.class
 com\mycompany\emanagementsystem\servlet\UpdateParameterServlet.class
 com\mycompany\utils\AuditUtil$AuditInfo.class
@@ -9,6 +10,7 @@ com\mycompany\emanagementsystem\servlet\LoginServlet.class
 com\mycompany\emanagementsystem\servlet\AssetDAO.class
 com\mycompany\emanagementsystem\resources\JakartaEE8Resource.class
 com\mycompany\emanagementsystem\servlet\CategoryServlet.class
+com\mycompany\emanagementsystem\servlet\StockServlet.class
 com\mycompany\utils\ShareVariable.class
 com\mycompany\emanagementsystem\servlet\CityServlet.class
 com\mycompany\emanagementsystem\servlet\TransactionServlet.class
@@ -18,6 +20,7 @@ com\mycompany\emanagementsystem\servlet\AssetServlet.class
 com\mycompany\emanagementsystem\servlet\UpdateAssetServlet.class
 com\mycompany\utils\EncryptionDemo.class
 com\mycompany\emanagementsystem\servlet\StateServlet.class
+com\mycompany\emanagementsystem\servlet\GenderServlet.class
 com\mycompany\utils\CryptoUtil.class
 com\mycompany\emanagementsystem\servlet\BrandServlet.class
 com\mycompany\emanagementsystem\servlet\UpdateUserServlet.class

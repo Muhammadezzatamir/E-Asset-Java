@@ -39,18 +39,23 @@
                 </thead>
                 <tbody>
                     <%
-                        String strsql = "select * from [transaction]";
+                        String strsql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, a.trans_id, d.stock_code, b.parameter_value as category, c.parameter_value as brand, d.stock_model, d.quantity " +
+                                        " from [transaction] a " +
+                                        " left join stock d on a.trans_stockid = d.stock_id and d.is_deleted = 0 " +
+                                        " left join gl_parameter b on d.stock_category = b.parameter_code and b.parameter_type = '1002' " +
+                                        " left join gl_parameter c on d.stock_brand = c.parameter_code and c.parameter_type = '1003' " +
+                                        " where a.is_deleted = 0";
                         try(DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(strsql))
                         {
                             while (rs.next()) { 
                     %>
                     <tr>
-                        <td><%= rs.getInt("trans_id")%></td>
-                        <td><%= rs.getInt("trans_stockid")%></td>
-                        <td><%= rs.getInt("trans_stockid")%></td>
-                        <td><%= rs.getInt("trans_stockid")%></td>
-                        <td><%= rs.getInt("trans_stockid")%></td>
-                        <td><%= rs.getInt("trans_stockid")%></td>
+                        <td><%= rs.getInt("num_row")%></td>
+                        <td><%= rs.getString("stock_code")%></td>
+                        <td><%= rs.getString("category")%></td>
+                        <td><%= rs.getString("brand")%></td>
+                        <td><%= rs.getString("stock_model")%></td>
+                        <td><%= rs.getInt("quantity")%></td>
                         <td>
                             <button class="btn btn-sm btn-warning me-1 edit-btn" data-id="<%= rs.getInt("trans_id") %>">
                                 <i class="bi bi-pencil"></i>
@@ -126,18 +131,33 @@
                 const openModalBtn = document.getElementById("modal_addtransaction");
                 const closeModalBtn = document.getElementById("modal_close");
                 addAssetModal = new bootstrap.Modal(document.getElementById("addtransactionModal"));
+                
+                //Load stock
+                const ddl_stock = document.getElementById('trans_stockid');
+                
+                fetch('<%=request.getContextPath()%>/api/stock')
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    data.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        ddl_stock.appendChild(option);;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching category', error);
+                    alert('Failed to load category list.');
+                });
 
                 openModalBtn.addEventListener("click", function () {
                     addAssetModal.show();
                 });
                 closeModalBtn.addEventListener("click", function () {
                     addAssetModal.hide();
-                });
-
-                $('#contactsTable').DataTable({
-                    paging: true,
-                    searching: true,
-                    ordering: true
                 });
                 
                 const today = new Date();

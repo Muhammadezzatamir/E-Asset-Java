@@ -30,14 +30,15 @@ public class DistrictServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         
-        String query = "SELECT parameter_id, parameter_value FROM gl_parameter WHERE parameter_type = '2'";
+        String stateId = request.getParameter("stateId");
+        String query = "SELECT parameter_code, parameter_value FROM gl_parameter WHERE parameter_type = '2' AND parameter_parent_code = ?";
         
         JSONArray countries = new JSONArray();
         
-        try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(query)) {
+        try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executePreparedQuery(query, stateId)) {
             while (rs.next()) {
                 JSONObject country = new JSONObject();
-                country.put("id", rs.getInt("parameter_id"));
+                country.put("id", rs.getInt("parameter_code"));
                 country.put("name", rs.getString("parameter_value"));
                 countries.put(country);
             }

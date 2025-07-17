@@ -48,20 +48,16 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Gender</label>
-                        <select name="gender_id" class="form-control">
-                            <option value="">Select</option>
-                            <option value="1">Male</option>
-                            <option value="2">Female</option>
+                        <select name="gender_id" id="ddl_gender" class="form-control">
+                            <option value="">--- Select ---</option>
+                            <!-- Add Options dynamically if needed -->
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Race</label>
-                        <select name="race_id" class="form-control">
-                            <option value="">Select</option>
-                            <option value="1">Malay</option>
-                            <option value="2">Chinese</option>
-                            <option value="3">Indian</option>
-                            <option value="4">Others</option>
+                        <select name="race_id" id="ddl_race" class="form-control">
+                            <option value="">--- Select ---</option>
+                            <!-- Add Options dynamically if needed -->
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -88,39 +84,44 @@
                                     <label class="form-label">Postcode</label>
                                     <input type="text" name="postcode" class="form-control" />
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">City</label>
-                                    <select name="city_id" id="cityDropdown" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none" id="cityOtherContainer">
-                                    <label class="form-label">Other City</label>
-                                    <input type="text" name="city_other" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">District</label>
-                                    <select name="district_id" id="districtDropdown" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none" id="districtOtherContainer">
-                                    <label class="form-label">Other District</label>
-                                    <input type="text" name="district_other" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">State</label>
-                                    <select name="state_id" id="stateDropdown" class="form-control">
-                                        <option value="">Select</option>
-                                        <!-- Add options dynamically if needed -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 d-none"  id="stateOtherContainer">
-                                    <label class="form-label">Other State</label>
-                                    <input type="text" name="state_other" class="form-control" />
-                                </div>
+
+                                
+                                    <div class="col-md-6">
+                                        <label class="form-label">City</label>
+                                        <select name="city_id" id="cityDropdown" class="form-control">
+                                            <option value="">Select</option>
+                                            <!-- Populate options dynamically -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">District</label>
+                                        <select name="district_id" id="districtDropdown" class="form-control">
+                                            <option value="">Select</option>
+                                            <!-- Populate options dynamically -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">State</label>
+                                        <select name="state_id" id="stateDropdown" class="form-control">
+                                            <option value="">Select</option>
+                                            <!-- Populate options dynamically -->
+                                        </select>
+                                    </div>
+                                
+                                    <div class="col-md-6">
+                                        <label class="form-label">Other City</label>
+                                        <input type="text" name="city_other" class="form-control" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Other District</label>
+                                        <input type="text" name="district_other" class="form-control" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Other State</label>
+                                        <input type="text" name="state_other" class="form-control" />
+                                    </div>
+                                
+
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
                                     <select name="country" id="countryDropdown" class="form-control">
@@ -159,80 +160,144 @@
     <!-- JavaScript to load countries dynamically -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            fetch('<%=request.getContextPath()%>/api/countries') // Calls your servlet
-                .then(response => {
-                    if (!response.ok) throw new Error("Network error");
-                    return response.json();
-                })
-                .then(data => {
-                    const dropdown = document.getElementById('countryDropdown');
-                    data.forEach(country => {
-                        const option = document.createElement('option');
-                        option.value = country.id;
-                        option.textContent = country.name;
-                        dropdown.appendChild(option);
+            const countryDropdown = document.getElementById('countryDropdown');
+                const stateDropdown = document.getElementById('stateDropdown');
+
+                // Fetch Countries
+                fetch('<%=request.getContextPath()%>/api/countries')
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error");
+                        return response.json();
+                    })
+                    .then(data => {
+                        data.forEach(country => {
+                            const option = document.createElement('option');
+                            option.value = country.id;
+                            option.textContent = country.name;
+                            if (country.id === 1) option.selected = true;
+                            countryDropdown.appendChild(option);
+                        });
+                        countryDropdown.dispatchEvent(new Event('change')); // Load states for default country
+                    })
+                    .catch(error => {
+                        console.error('Error fetching countries:', error);
+                        alert('Failed to load country list.');
                     });
-                })
-                .catch(error => {
-                    console.error('Error fetching countries:', error);
-                    alert('Failed to load country list.');
+
+                // On Country Change → Load States
+                countryDropdown.addEventListener('change', () => {
+                    const countryId = countryDropdown.value;
+                    console.log(countryId);
+                    // Clear existing states
+                    stateDropdown.innerHTML = '<option value="">Select State</option>';
+
+                    if (!countryId) return;
+
+                    fetch("<%=request.getContextPath()%>/api/state?countryId=" + countryId +"")
+                        .then(response => {
+                            if (!response.ok) throw new Error("Network error");
+                            return response.json();
+                        })
+                        .then(data => {
+                            data.forEach(state => {
+                                const option = document.createElement('option');
+                                option.value = state.id;
+                                option.textContent = state.name;
+                                stateDropdown.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching states:', error);
+                            alert('Failed to load state list.');
+                        });
                 });
                 
-            fetch('<%=request.getContextPath()%>/api/state') // Calls your servlet
-                .then(response => {
-                    if (!response.ok) throw new Error("Network error");
-                    return response.json();
-                })
-                .then(data => {
-                    const dropdown = document.getElementById('stateDropdown');
-                    data.forEach(country => {
-                        const option = document.createElement('option');
-                        option.value = country.id;
-                        option.textContent = country.name;
-                        dropdown.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching state:', error);
-                    alert('Failed to load state list.');
-                });
+                const districtDropdown = document.getElementById('districtDropdown');
+                const cityDropdown = document.getElementById('cityDropdown');
                 
-            fetch('<%=request.getContextPath()%>/api/district') // Calls your servlet
-                .then(response => {
-                    if (!response.ok) throw new Error("Network error");
-                    return response.json();
-                })
-                .then(data => {
-                    const dropdown = document.getElementById('districtDropdown');
-                    data.forEach(country => {
-                        const option = document.createElement('option');
-                        option.value = country.id;
-                        option.textContent = country.name;
-                        dropdown.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching district', error);
-                    alert('Failed to load district list.');
-                });
+            stateDropdown.addEventListener('change', () => {
+                const stateId = stateDropdown.value;
+                console.log(stateId);
+                districtDropdown.innerHTML = '<option value="">Select District</option>';
+                cityDropdown.innerHTML = '<option value="">Select City</option>';
+
+                if (!stateId) return;
                 
-            fetch('<%=request.getContextPath()%>/api/city') // Calls your servlet
+                // Fetch Districts by stateId
+                fetch("<%=request.getContextPath()%>/api/district?stateId=" + stateId + "")
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error");
+                        return response.json();
+                    })
+                    .then(data => {
+                        data.forEach(district => {
+                            const option = document.createElement('option');
+                            option.value = district.id;
+                            option.textContent = district.name;
+                            districtDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching district:', error);
+                        alert('Failed to load district list.');
+                    });
+
+                // Fetch Cities by stateId
+                fetch("<%=request.getContextPath()%>/api/city?stateId=" + stateId + "")
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error");
+                        return response.json();
+                    })
+                    .then(data => {
+                        data.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            cityDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching city:', error);
+                        alert('Failed to load city list.');
+                    });
+            });
+                
+            fetch('<%=request.getContextPath()%>/api/gender') // Calls your servlet
                 .then(response => {
                     if (!response.ok) throw new Error("Network error");
                     return response.json();
                 })
                 .then(data => {
-                    const dropdown = document.getElementById('cityDropdown');
-                    data.forEach(country => {
+                    const dropdown = document.getElementById('ddl_gender');
+                    data.forEach(gender => {
                         const option = document.createElement('option');
-                        option.value = country.id;
-                        option.textContent = country.name;
+                        option.value = gender.id;
+                        option.textContent = gender.name;
                         dropdown.appendChild(option);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching city', error);
-                    alert('Failed to load city list.');
+                    alert('Failed to load gender list.');
+                });
+                
+            fetch('<%=request.getContextPath()%>/api/race') // Calls your servlet
+                .then(response => {
+                    if (!response.ok) throw new Error("Network error");
+                    return response.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById('ddl_race');
+                    data.forEach(race => {
+                        const option = document.createElement('option');
+                        option.value = race.id;
+                        option.textContent = race.name;
+                        dropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching city', error);
+                    alert('Failed to load race list.');
                 });
         });
         

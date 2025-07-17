@@ -29,7 +29,7 @@ public class BrandServlet extends HttpServlet {
             return;
         }
 
-        String query = "SELECT parameter_code, parameter_value FROM gl_parameter WHERE parameter_type = ?";
+        String query = "SELECT parameter_code, parameter_value FROM gl_parameter WHERE parameter_type = '1003' and parameter_parent_code = ?";
 
         JSONArray brandList = new JSONArray();
 
