@@ -34,6 +34,7 @@
                         <th>Category</th>
                         <th>Brand</th>
                         <th>Quantity</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,6 +51,14 @@
                         <td><%= rs.getInt("trans_stockid")%></td>
                         <td><%= rs.getInt("trans_stockid")%></td>
                         <td><%= rs.getInt("trans_stockid")%></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1 edit-btn" data-id="<%= rs.getInt("trans_id") %>">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="<%= rs.getInt("trans_id") %>">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
                     </tr>
                     <% 
                             }
@@ -74,15 +83,17 @@
                             <button type="button" class="btn-close" id="modal_close" arial-label="Close">X</button>
                         </div>
                         <div class="modal-body row g-3">
+                            <input type="hidden" name="trans_id" id="trans_id" />
+
                             <div class="col-md-6">
                                 <label class="form-label">Item</label>
-                                <select name="item_list" id="ddl_item" class="form-control">
+                                <select name="trans_stockid" id="trans_stockid" class="form-control">
                                     <option value="1">-- Select --</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Quantity</label>
-                                <input type="number" name="quantity" id="quantity" class="form-control">
+                                <input type="number" name="trans_stockout" id="trans_stockout" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -109,10 +120,12 @@
                 
             });
             
+            let addAssetModal;
+            
             document.addEventListener("DOMContentLoaded", function () {
                 const openModalBtn = document.getElementById("modal_addtransaction");
                 const closeModalBtn = document.getElementById("modal_close");
-                const addAssetModal = new bootstrap.Modal(document.getElementById("addtransactionModal"));
+                addAssetModal = new bootstrap.Modal(document.getElementById("addtransactionModal"));
 
                 openModalBtn.addEventListener("click", function () {
                     addAssetModal.show();
@@ -134,6 +147,29 @@
                 const formattedDate = `${dd}-${mm}-${yyyy}`;
                 document.getElementById('trans_date').value = formattedDate;
             });
+            
+            document.querySelectorAll(".edit-btn").forEach(button => {
+                    button.addEventListener("click", function (e) {
+                        const trans_id = this.dataset.id;
+                        console.log(trans_id);
+                        
+                        fetch("getAssetById.jsp?id=" + trans_id)
+                            .then(res => res.json())
+                            .then(data => {
+                                console.log("Fetched transaction:", data);
+                                document.getElementById("trans_id").value = trans_id;
+                                document.getElementById("trans_stockid").value = data.trans_stockid; // ✅ matches item_list / ddl_item
+                                document.getElementById("trans_stockout").value = data.trans_stockout; // ✅ matches quantity
+
+                                // Update modal title
+                                document.getElementById("addTransactionModalLabel").textContent = "Edit Transaction";
+                                document.querySelector("button[type='submit']").textContent = "Update";
+                                
+                                addAssetModal.show();
+                            })
+                            .catch(err => console.error("Fetch failed", err));
+                    });
+                });
             
             document.getElementById("addTransaction").addEventListener("submit", function (e) {
                 e.preventDefault();

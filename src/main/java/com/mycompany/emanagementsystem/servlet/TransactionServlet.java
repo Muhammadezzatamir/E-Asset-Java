@@ -83,9 +83,9 @@ public class TransactionServlet extends HttpServlet{
         
        try (PreparedStatement stmt = conn.prepareStatement(strsql)) {
            stmt.setString(1, userId);
-           stmt.setString(2, "1");
+           stmt.setInt(2, input.optInt("trans_stockid", 0));
            stmt.setDate(3, java.sql.Date.valueOf(LocalDate.now())); // ← today’s date
-           stmt.setInt(4, input.optInt("quantity", 0));
+           stmt.setInt(4, input.optInt("trans_stockout", 0));
            stmt.setString(5, "Stock Out");
            
            stmt.setTimestamp(6, audit.addDate);

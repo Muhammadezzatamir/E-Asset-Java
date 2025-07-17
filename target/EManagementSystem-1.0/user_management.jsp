@@ -39,7 +39,7 @@
                 </thead>
                 <tbody>
                     <%
-                        String sql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, first_name, last_name, nric, email, mobile_no from gl_user where is_deleted = 0 and role_id = '1'";
+                        String sql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, user_id, first_name, last_name, nric, email, mobile_no from gl_user where is_deleted = 0 and role_id = '1'";
                         try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(sql)) {
 
                             while (rs.next()) {
@@ -51,7 +51,14 @@
                         <td><%= rs.getString("nric")%></td>
                         <td><%= rs.getString("email")%></td>
                         <td><%= rs.getString("mobile_no")%></td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1 edit-btn" data-id="<%= rs.getInt("user_id") %>">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="<%= rs.getInt("user_id") %>">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
                     </tr>
                     <%
                         }
@@ -76,6 +83,7 @@
                             <button type="button" class="btn-close" id="modal_close" aria-label="Close">X</button>
                         </div>
                         <div class="modal-body row g-3">
+                            <input type="hidden" name="user_id" id="user_id" />
                             <div class="col-md-6">
                                 <label class="form-label">Username</label>
                                 <input type="text" name="user_name" class="form-control" required />
@@ -171,6 +179,62 @@
                     addAssetModal.hide();
                 });
             });
+            
+            document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const userId = this.dataset.id;
+
+                    fetch("getUserById.jsp?id=" + userId)
+                        .then(res => res.json())
+                        .then(data => {
+                            document.getElementById("user_id").value = userId;
+                            document.querySelector("input[name='user_name']").value = data.user_name;
+                            document.querySelector("input[name='password']").value = data.password;
+                            document.querySelector("input[name='first_name']").value = data.first_name;
+                            document.querySelector("input[name='last_name']").value = data.last_name;
+                            document.querySelector("input[name='nric']").value = data.nric;
+                            document.querySelector("input[name='email']").value = data.email;
+                            document.querySelector("input[name='mobile_no']").value = data.mobile_no;
+                            document.querySelector("select[name='gender_id']").value = data.gender_id;
+                            document.querySelector("select[name='race_id']").value = data.race_id;
+                            document.querySelector("input[name='marital_status']").value = data.marital_status;
+
+                            document.getElementById("addAssetModalLabel").textContent = "Edit User";
+                            document.querySelector("button[type='submit']").textContent = "Update";
+
+                            $('#addAssetModal').modal('show'); // Bootstrap show
+                        })
+                        .catch(err => console.error("Fetch failed", err));
+                });
+            });
+
+            const currentUserId = <%= session.getAttribute("user_id") %>;
+            
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                    button.addEventListener("click", function () {
+                        const user_id = this.getAttribute("data-id");
+                        if (confirm("Are you sure you want to delete this stock?")) {
+                            fetch("<%= request.getContextPath() %>/api/deleteuser?id=" + user_id, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    user_id: user_id,
+                                    aud_add_userid: currentUserId
+                                })
+                            })
+                            .then(res => {
+                                if (!res.ok) throw new Error("Delete failed");
+                                location.reload();
+                            })
+                            .catch(err => {
+                                console.error("Delete error", err);
+                                alert("Delete failed");
+                            });
+                        }
+                    });
+                });
 
             document.getElementById("addAsset").addEventListener("submit", function (e) {
                 e.preventDefault();
@@ -182,32 +246,31 @@
                     data[key] = value;
                 });
 
-                fetch('<%= request.getContextPath() %>/api/adduser', {
+                const isEdit = !!data.user_id; // detect if user_id is set
+                const url = isEdit
+                    ? '<%= request.getContextPath() %>/api/updateuser'
+                    : '<%= request.getContextPath() %>/api/adduser';
+
+                fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 })
-                .then(res => {
-                    if (!res.ok) throw new Error("Network response was not ok");
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(response => {
                     alert(response.message);
-                    if(response.success) {
-                        console.log("Success adding asset");
-                        // ✅ Correct Bootstrap 4 jQuery modal hide
+                    if (response.success) {
                         $('#addAssetModal').modal('hide');
-
                         this.reset();
+                        location.reload(); // optional reload
                     }
                 })
                 .catch(err => {
-                    console.error("Failed to add asset:", err);
-                    alert("Failed to add asset");
+                    console.error("Failed to submit:", err);
+                    alert("Submission failed");
                 });
             });
+
 
 
         </script>

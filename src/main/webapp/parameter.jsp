@@ -39,7 +39,7 @@
                     <%
                         String sql = "SELECT " +
                                     "ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, " +
-                                    "parameter_code, parameter_parent_code, parameter_value " +
+                                    "parameter_id, parameter_code, parameter_parent_code, parameter_value " +
                                     "FROM gl_parameter " +
                                     "WHERE is_deleted = 0";
                         try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(sql)) {
@@ -51,7 +51,15 @@
                         <td><%= rs.getString("parameter_code")%></td>
                         <td><%= rs.getString("parameter_parent_code")%></td>
                         <td><%= rs.getString("parameter_value")%></td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-btn" data-id="<%= rs.getString("parameter_id") %>">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="<%= rs.getString("parameter_id") %>">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+
                     </tr>
                     <%
                         }
@@ -76,6 +84,7 @@
                             <button type="button" class="btn-close" id="modal_close" aria-label="Close">X</button>
                         </div>
                         <div class="modal-body row g-3">
+                            <input type="hidden" name="parameter_id" id="parameter_id" />
                             <div class="col-md-6">
                                 <label class="form-label">Code</label>
                                 <input type="text" class="form-control" name="parameter_code" required />
@@ -123,6 +132,8 @@
                 });
             });
 
+            let addAssetModal;
+
             document.addEventListener("DOMContentLoaded", function () {
     
                 const openModalBtn = document.getElementById("modal_addasset");
@@ -133,7 +144,7 @@
                     return;
                 }
 
-                const addAssetModal = new bootstrap.Modal(addAssetModalEl);
+                addAssetModal = new bootstrap.Modal(addAssetModalEl);
 
                 document.getElementById("modal_addasset").addEventListener("click", function () {
                     addAssetModal.show();
@@ -192,43 +203,130 @@
                     }
                 });
             });
+            
+            async function loadParentOptions(categoryId, selectedParentCode) {
+                brandDropdown.innerHTML = '<option value="">Select</option>';
 
-            document.getElementById("addAsset").addEventListener("submit", function (e) {
+                if (!categoryId) return;
+
+                try {
+                    const response = await fetch("<%=request.getContextPath()%>/api/parameter?categoryId=" + categoryId);
+                    const data = await response.json();
+
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        brandDropdown.appendChild(option);
+                    });
+
+                    // ✅ Log for debug
+                    console.log("Dropdown options:", [...brandDropdown.options].map(o => o.value));
+                    console.log("Setting selected:", selectedParentCode);
+
+                    // ✅ Bind value AFTER all options appended
+                    brandDropdown.value = selectedParentCode || '';
+
+                    // ✅ If value not matched, log warning
+                    if (brandDropdown.value !== selectedParentCode) {
+                        console.warn("⚠️ No match found for parent code:", selectedParentCode);
+                    }
+
+                } catch (err) {
+                    console.error("Failed to load parent options:", err);
+                    alert("Error loading parent options");
+                }
+            }
+
+
+            
+           document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", async function () {
+                    const code = this.dataset.id;
+
+                    try {
+                        const res = await fetch("getParameterByCode.jsp?code=" + code);
+                        const data = await res.json();
+                        document.querySelector("input[name='parameter_id']").value = code;
+                        document.querySelector("input[name='parameter_code']").value = data.parameter_code;
+                        document.querySelector("input[name='parameter_value']").value = data.parameter_value;
+                        categoryDropdown.value = data.parameter_type;
+
+                        await loadParentOptions(data.parameter_type, data.parameter_parent_code);
+
+                        document.getElementById("addAssetModalLabel").textContent = "Edit Parameter";
+                        document.querySelector("#addAsset button[type='submit']").textContent = "Update";
+                        addAssetModal.show();
+
+                    } catch (err) {
+                        console.error("Failed to load parameter data:", err);
+                        alert("Could not load parameter for editing");
+                    }
+                });
+            });
+
+
+            const currentUserId = <%= session.getAttribute("user_id") %>; // pass user_id to JS
+
+                document.querySelectorAll(".delete-btn").forEach(button => {
+                    button.addEventListener("click", function () {
+                        const parameter_id = this.getAttribute("data-id");
+                        console.log(parameter_id);
+                        if (confirm("Are you sure you want to delete this stock?")) {
+                            fetch("<%= request.getContextPath() %>/api/deleteparameter?id=" + parameter_id, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    stock_id: parameter_id,
+                                    aud_add_userid: currentUserId
+                                })
+                            })
+                            .then(res => {
+                                if (!res.ok) throw new Error("Delete failed");
+                                location.reload();
+                            })
+                            .catch(err => {
+                                console.error("Delete error", err);
+                                alert("Delete failed");
+                            });
+                        }
+                    });
+                });
+
+            document.getElementById("addAsset").addEventListener("submit", async function (e) {
                 e.preventDefault();
 
                 const formData = new FormData(this);
-                const data = {};
+                const data = Object.fromEntries(formData.entries());
 
-                formData.forEach((value, key) => {
-                    data[key] = value;
-                });
+                data.aud_add_userid = currentUserId;
 
-                fetch('<%= request.getContextPath() %>/api/parameter', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Network response was not ok");
-                    return res.json();
-                })
-                .then(response => {
-                    alert(response.message);
-                    if(response.success) {
-                        console.log("Success adding asset");
-                        // ✅ Correct Bootstrap 4 jQuery modal hide
-                        $('#addAssetModal').modal('hide');
+                const isEdit = !!data.parameter_id;
 
-                        this.reset();
-                    }
-                })
-                .catch(err => {
-                    console.error("Failed to add asset:", err);
-                    alert("Failed to add asset");
-                });
+                const url = isEdit
+                    ? "<%= request.getContextPath() %>/api/updateparameter"
+                    : "<%= request.getContextPath() %>/api/parameter";
+
+                const method = isEdit ? "POST" : "POST"; // you reuse same method for both
+
+                try {
+                    const res = await fetch(url, {
+                        method,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data),
+                    });
+
+                    const result = await res.json();
+                    alert(result.message);
+                    if (result.success) location.reload();
+                } catch (err) {
+                    console.error("Submit error:", err);
+                    alert("Failed to submit");
+                }
             });
+
 
 
         </script>
