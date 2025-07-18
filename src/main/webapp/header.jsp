@@ -24,11 +24,6 @@
                         <i class="bi bi-moon"></i>
                     </button>
                 </li>
-                <li class="nav-item me-3">
-                    <a href="profile.jsp" class="btn btn-outline-light btn-sm px-3" title="Update your profile">
-                        <i class="bi bi-person-lines-fill me-1"></i>
-                    </a>
-                </li>
                 <li class="nav-item  me-3">
                     <a href="login.jsp" class="btn btn-outline-light btn-sm px-3">
                         <i class="bi bi-box-arrow-right me-1"></i>
