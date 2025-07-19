@@ -20,7 +20,7 @@
 
         <main class="content">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">Asset List</h3>
+                <h3 class="mb-0">User List (Admin)</h3>
                 <button type="button" class="btn btn-primary" id="modal_addasset">
                     <i class="bi bi-plus-circle me-1"></i> User Management
                 </button>
@@ -79,7 +79,7 @@
                 <div class="modal-content">
                     <form id="addAsset">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addAssetModalLabel">Add New Asset</h5>
+                            <h5 class="modal-title" id="addAssetModalLabel">Add New Admin</h5>
                             <button type="button" class="btn-close" id="modal_close" aria-label="Close">X</button>
                         </div>
                         <div class="modal-body row g-3">
@@ -136,7 +136,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Add Asset</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
                         </div>
                     </form>
                 </div>

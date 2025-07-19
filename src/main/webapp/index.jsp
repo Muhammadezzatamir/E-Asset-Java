@@ -48,7 +48,7 @@
                         <div class="card-body bg-warning text-dark rounded-5">
                             <h5 class="card-title">Transaction</h5>
                             <p class="card-text fs-2"><%= transCount %></p>
-                            <a href="transaction.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
+                            <a href="transaction.jsp" class="btn btn-dark btn-sm">View Transaction</a>
                         </div>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         <div class="card-body bg-success text-white rounded-5">
                             <h5 class="card-title">User</h5>
                             <p class="card-text fs-2"><%= userCount %></p>
-                            <a href="users.jsp" class="btn btn-light btn-sm">View Schedule</a>
+                            <a href="users.jsp" class="btn btn-light btn-sm">View User</a>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                         <div class="card-body bg-warning text-dark rounded-5">
                             <h5 class="card-title">Transaction</h5>
                             <p class="card-text fs-2"><%= transCount %></p>
-                            <a href="transaction.jsp" class="btn btn-dark btn-sm">Manage Requests</a>
+                            <a href="transaction.jsp" class="btn btn-dark btn-sm">Manage Transactions</a>
                         </div>
                     </div>
                 </div>

@@ -43,12 +43,25 @@
                         <th>Model</th>
                         <th>Description</th>
                         <th>Quantity</th>
+                        <%
+                            roleId = (String) session.getAttribute("role_id");
+                            if ("1".equals(roleId)) {
+                        %>
                         <th>Action</th>
+                        <%
+                            }
+                        %>
                     </tr>
                 </thead>
                 <tbody>
                     <%
-                        String sql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, * from stock where is_deleted = 0";
+                            String sql = " select " +
+                                    " ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, " + 
+                                    " a.stock_id, a.stock_code, b.parameter_value as stock_category, c.parameter_value as stock_brand, stock_model, stock_desc, quantity " +
+                                    " from stock a " +
+                                    " left join gl_parameter b on a.stock_category = b.parameter_code and b.parameter_type = '1002' and b.is_deleted = 0 " + 
+                                    " left join gl_parameter c on a.stock_brand = c.parameter_code and a.stock_category = c.parameter_parent_code and c.parameter_type = '1003' and c.is_deleted = 0 " + 
+                                    " where a.is_deleted = 0";
                         try (DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(sql)) {
 
                             while (rs.next()) {
@@ -61,6 +74,10 @@
                         <td><%= rs.getString("stock_model")%></td>
                         <td><%= rs.getString("stock_desc")%></td>
                         <td><%= rs.getString("quantity")%></td>
+                        <%
+                            roleId = (String) session.getAttribute("role_id");
+                            if ("1".equals(roleId)) {
+                        %>
                         <td>
                             <button class="btn btn-sm btn-warning me-1 edit-btn" data-id="<%= rs.getInt("stock_id") %>">
                                 <i class="bi bi-pencil"></i>
@@ -69,7 +86,9 @@
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
-
+                        <%
+                            }
+                        %>
                     </tr>
                     <%
                         }

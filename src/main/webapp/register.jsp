@@ -107,8 +107,8 @@
                                             <!-- Populate options dynamically -->
                                         </select>
                                     </div>
-                                
-                                    <div class="col-md-6">
+                                    
+<!--                                    <div class="col-md-6">
                                         <label class="form-label">Other City</label>
                                         <input type="text" name="city_other" class="form-control" />
                                     </div>
@@ -119,7 +119,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Other State</label>
                                         <input type="text" name="state_other" class="form-control" />
-                                    </div>
+                                    </div>-->
                                 
 
                                 <div class="col-md-6">

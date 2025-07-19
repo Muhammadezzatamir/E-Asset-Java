@@ -29,22 +29,36 @@
                 <thead>
                     <tr>
                         <th>No.</th>
-                        <th>Transaction ID</th>
                         <th>Code</th>
                         <th>Category</th>
                         <th>Brand</th>
+                        <th>Model</th>
                         <th>Quantity</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <%
-                        String strsql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, a.trans_id, d.stock_code, b.parameter_value as category, c.parameter_value as brand, d.stock_model, d.quantity " +
+                        roleId = (String) session.getAttribute("role_id");
+                        String userId = (String) session.getAttribute("user_id");
+                        String strsql = "";
+                        if ("1".equals(roleId)) {
+                            strsql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, a.trans_id, d.stock_code, b.parameter_value as category, c.parameter_value as brand, d.stock_model, d.quantity " +
                                         " from [transaction] a " +
                                         " left join stock d on a.trans_stockid = d.stock_id and d.is_deleted = 0 " +
                                         " left join gl_parameter b on d.stock_category = b.parameter_code and b.parameter_type = '1002' " +
                                         " left join gl_parameter c on d.stock_brand = c.parameter_code and c.parameter_type = '1003' " +
                                         " where a.is_deleted = 0";
+                        }
+                        else
+                        {
+                            strsql = "select ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS num_row, a.trans_id, d.stock_code, b.parameter_value as category, c.parameter_value as brand, d.stock_model, d.quantity " +
+                                        " from [transaction] a " +
+                                        " left join stock d on a.trans_stockid = d.stock_id and d.is_deleted = 0 " +
+                                        " left join gl_parameter b on d.stock_category = b.parameter_code and b.parameter_type = '1002' " +
+                                        " left join gl_parameter c on d.stock_brand = c.parameter_code and c.parameter_type = '1003' " +
+                                        " where a.is_deleted = 0 and a.trans_userid = '" + userId + "'";
+                        }
                         try(DBWrapper db = new DBWrapper(); ResultSet rs = db.executeQuery(strsql))
                         {
                             while (rs.next()) { 
@@ -215,14 +229,15 @@
                 .then(response => {
                     alert(response.message);
                     if(response.success) {
-                        console.log("Success adding asset");
+                        console.log("Success adding transaction");
                         $('#addtransactionModal').modal('hide');
                         
                         this.reset();
+                        location.reload();
                     }
                 })
                 .catch(err => {
-                    console.error("Failed to add asset:", err);
+                    console.error("Failed to add transaction", err);
                     alert("Failed to add asset");
                 });
             });

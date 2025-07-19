@@ -20,7 +20,7 @@
 
         <main class="content">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">Asset List</h3>
+                <h3 class="mb-0">User List (Admin)</h3>
                 <button type="button" class="btn btn-primary" id="modal_addasset">
                     <i class="bi bi-plus-circle me-1"></i> User Management
                 </button>
